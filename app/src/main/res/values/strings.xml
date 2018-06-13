@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SimplePlayer</string>
+    <string name="songs_fragment">Songs</string>
+    <string name="playlists_fragment">Playlists</string>
 </resources>
