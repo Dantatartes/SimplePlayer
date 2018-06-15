@@ -9,14 +9,14 @@ import java.util.*
 class ViewPagerAdapter internal constructor(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     private val COUNT = 2
-    var pageTitle = Arrays.asList("Songs", "Playlists")
+    private var pageTitles: List<String> = Arrays.asList("Songs", "Collections")
 
 
     override fun getItem(position: Int): Fragment? {
         var fragment: Fragment? = null
         when (position) {
             0 -> fragment = SongsFragment()
-            1 -> fragment = PlaylistsFragment()
+            1 -> fragment = CollectionsFragment()
         }
 
         return fragment
@@ -27,6 +27,6 @@ class ViewPagerAdapter internal constructor(fm: FragmentManager) : FragmentPager
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return pageTitle[position]
+        return pageTitles[position]
     }
 }
