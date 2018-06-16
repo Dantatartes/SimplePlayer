@@ -1,5 +1,6 @@
 package com.dantatartes.simpleplayer
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             (R.id.action_settings) -> {
-                setContentView(R.layout.settings)
+                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
                 return true
             }
         }
