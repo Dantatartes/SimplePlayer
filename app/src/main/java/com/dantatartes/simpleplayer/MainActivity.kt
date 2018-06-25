@@ -2,19 +2,30 @@ package com.dantatartes.simpleplayer
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.ContentResolver
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.v4.app.ActivityCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.Toast
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var audioList: ArrayList<Audio>
+    private var cursor: Cursor? = null
+    private lateinit var uri: Uri
+    internal lateinit var contentResolver: ContentResolver
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +33,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         androidRuntimePermission()
+        audioList = ArrayList()
+        getAllAudio()
 
         val viewPager = findViewById<ViewPager>(R.id.viewPager)
         val actionBar = supportActionBar
@@ -29,6 +42,42 @@ class MainActivity : AppCompatActivity() {
         if (viewPager != null) {
             val adapter = ViewPagerAdapter(supportFragmentManager)
             viewPager.adapter = adapter
+        }
+    }
+
+
+    private fun getAllAudio() {
+
+        contentResolver = baseContext.contentResolver
+        uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+
+        cursor = contentResolver.query(
+                uri, null, null, null, null
+        )// Uri
+
+        if (cursor == null) {
+            Toast.makeText(applicationContext, "Something Went Wrong.", Toast.LENGTH_LONG).show()
+        } else if (!cursor!!.moveToFirst()) {
+            Toast.makeText(applicationContext, "No Music Found on SD Card.", Toast.LENGTH_LONG).show()
+        } else {
+
+            val title = cursor!!.getColumnIndex(MediaStore.Audio.Media.TITLE)
+            val artist = cursor!!.getColumnIndex(MediaStore.Audio.Media.ARTIST)
+            val id = cursor!!.getColumnIndex(MediaStore.Audio.Media._ID)
+            val duration = cursor!!.getColumnIndex(MediaStore.Audio.Media.DURATION)
+
+            do {
+
+                val songID = cursor!!.getInt(id)
+                val finalSuccessfulUri = Uri.withAppendedPath(uri, "" + songID)
+
+                val songTitle = cursor!!.getString(title)
+                val songArtist = cursor!!.getString(artist)
+                val songDuration = cursor!!.getInt(duration)
+
+                audioList.add(Audio(songTitle, songArtist, finalSuccessfulUri, songDuration))
+
+            } while (cursor!!.moveToNext())
         }
     }
 
